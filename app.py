@@ -502,16 +502,16 @@ elif st.session_state.page == "main":
     st.title(f"🏫 Welcome {user['username']} to BiteHub")
 
     st.markdown("### 🤖 Canteen AI Assistant")
-q = st.text_input("Ask about menu, budget, feedback, or ordering:", key="ai_query_main")
-if st.button("Ask AI", key="ai_button_main"):
-    with st.spinner("Asking AI..."):
-        st.info(run_ai_with_rag(q))
+    q = st.text_input("Ask about menu, budget, feedback, or ordering:", key="ai_query_main")
+    if st.button("Ask AI", key="ai_button_main"):
+        with st.spinner("Asking AI..."):
+            st.info(run_ai_with_rag(q))
 
     st.divider()
 
     # Non-Staff (includes Guest)
     if user["role"] == "Non-Staff":
-        is_guest = (user["username"] == "Guest")
+        ...
 
         colA, colB = st.columns([2,1])
 
