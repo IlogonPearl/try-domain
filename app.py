@@ -17,51 +17,47 @@ def set_background(image_file: str):
         with open(image_file, "rb") as f:
             data = f.read()
         encoded = base64.b64encode(data).decode()
-st.markdown(
-    f"""
-    <style>
-    /* hide default Streamlit header */
-    header[data-testid="stHeader"] { display: none; }
 
-    /* kill the default block container white background */
-    [data-testid="stBlockContainer"] {
-        background: transparent !important;
-        box-shadow: none !important;
-    }
+        st.markdown(
+            f"""
+            <style>
+            /* Main app background */
+            [data-testid="stAppViewContainer"] {{
+                background: url("data:image/png;base64,{encoded}");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }}
 
-    /* tighten top spacing so no white box appears */
-    [data-testid="stAppViewContainer"] > section:first-child {
-        padding-top: 6px;
-    }
+            /* Remove white block container */
+            [data-testid="stBlockContainer"] {{
+                background: transparent !important;
+                box-shadow: none !important;
+            }}
 
-    /* login card look */
-    .login-card {
-        background: rgba(255,255,255,0.95);
-        padding: 20px;
-        border-radius: 10px;
-        max-width: 720px;
-        margin: 12px auto;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    }
+            /* Kill section wrapper if present */
+            [data-testid="stAppViewContainer"] > .main {{
+                background: transparent !important;
+                box-shadow: none !important;
+            }}
 
-    div.stButton > button {
-        display: inline-block;
-        margin: 8px;
-        width: 180px;
-        height: 44px;
-        font-size: 15px;
-        border-radius: 8px;
-    }
+            [data-testid="stAppViewContainer"] section {{
+                background: transparent !important;
+                box-shadow: none !important;
+            }}
 
-    input::-ms-clear, input::-ms-reveal { display: none; width: 0; height: 0; }
-    input::-webkit-search-cancel-button, 
-    input::-webkit-contacts-auto-fill-button, 
-    input::-webkit-clear-button { display: none; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-        
+            [data-testid="stSidebar"] {{
+                background: rgba(255,255,255,0.9);
+            }}
+
+            /* Hide Streamlit footer & menu */
+            #MainMenu {{ visibility: hidden; }}
+            footer {{ visibility: hidden; }}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+
     except Exception as e:
         st.error(f"Background error: {e}")
 
