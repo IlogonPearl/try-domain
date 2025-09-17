@@ -731,9 +731,11 @@ elif choice == "AI Assistant":
         with st.spinner("Asking AI..."):
             st.info(run_ai_with_rag(staff_q))
 
-        elif choice == "Feedback Review":
-            st.subheader("💬 Customer Feedback")
-            try:
+elif choice == "Feedback Review":
+    st.subheader("💬 Customer Feedback")
+    try:
+        # your feedback review code here
+        pass
                 fb_df = load_feedbacks_df()
                 if not fb_df.empty:
                     st.dataframe(fb_df)
