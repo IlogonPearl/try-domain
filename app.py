@@ -12,7 +12,7 @@ import secrets
 import re
 
 def set_background(image_file: str):
-    """Set background image and remove white container box."""
+    """Set only the background image."""
     try:
         with open(image_file, "rb") as f:
             data = f.read()
@@ -21,46 +21,66 @@ def set_background(image_file: str):
         st.markdown(
             f"""
             <style>
-            /* Main app background */
             [data-testid="stAppViewContainer"] {{
                 background: url("data:image/png;base64,{encoded}");
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
             }}
-
-            /* Remove white block container */
-            [data-testid="stBlockContainer"] {{
-                background: transparent !important;
-                box-shadow: none !important;
-            }}
-
-            /* Kill section wrapper if present */
-            [data-testid="stAppViewContainer"] > .main {{
-                background: transparent !important;
-                box-shadow: none !important;
-            }}
-
-            [data-testid="stAppViewContainer"] section {{
-                background: transparent !important;
-                box-shadow: none !important;
-            }}
-
-            [data-testid="stSidebar"] {{
-                background: rgba(255,255,255,0.9);
-            }}
-
-            /* Hide Streamlit footer & menu */
-            #MainMenu {{ visibility: hidden; }}
-            footer {{ visibility: hidden; }}
             </style>
             """,
             unsafe_allow_html=True,
         )
-
     except Exception as e:
         st.error(f"Background error: {e}")
 
+
+def apply_custom_css():
+    """Remove white box + style UI."""
+    st.markdown(
+        """
+        <style>
+        /* Kill Streamlit containers */
+        [data-testid="stBlockContainer"],
+        section.main > div,
+        [data-testid="stAppViewContainer"] section {
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        /* Sidebar */
+        [data-testid="stSidebar"] {
+            background: rgba(255,255,255,0.9) !important;
+        }
+
+        /* Hide header & footer */
+        header[data-testid="stHeader"] { display: none; }
+        #MainMenu { visibility: hidden; }
+        footer { visibility: hidden; }
+
+        /* Login card */
+        .login-card {
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 720px;
+            margin: 12px auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        /* Buttons */
+        div.stButton > button {
+            display: inline-block;
+            margin: 8px;
+            width: 180px;
+            height: 44px;
+            font-size: 15px;
+            border-radius: 8px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.set_page_config(page_title="BiteHub Canteen GenAI", layout="wide")
 set_background("can.jpg")
