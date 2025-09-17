@@ -11,9 +11,13 @@ import hashlib
 import secrets
 import re
 
-st.set_page_config(page_title="Background Test", layout="wide")
+st.set_page_config(page_title="BiteHub Canteen GenAI", layout="wide")
 
+# ---------------------------
+# BACKGROUND + CSS
+# ---------------------------
 def set_background(image_file: str):
+    """Set a full-page background image."""
     with open(image_file, "rb") as f:
         data = f.read()
     encoded = base64.b64encode(data).decode()
@@ -21,37 +25,59 @@ def set_background(image_file: str):
     st.markdown(
         f"""
         <style>
-        /* Set background image */
         [data-testid="stAppViewContainer"] {{
             background: url("data:image/png;base64,{encoded}") !important;
             background-size: cover !important;
             background-position: center !important;
         }}
 
-        /* Remove Streamlit default white */
+        /* Hide Streamlit header/footer */
         [data-testid="stHeader"], [data-testid="stToolbar"], footer, #MainMenu {{
             visibility: hidden !important;
         }}
+
+        /* Transparent background for content */
         [data-testid="stAppViewContainer"] > .main {{
             background: transparent !important;
         }}
+
+        /* Sidebar style */
         section[data-testid="stSidebar"] > div {{
             background: rgba(255,255,255,0.8) !important;
         }}
+
+        /* Login card */
+        .login-card {{
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 720px;
+            margin: 12px auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }}
+
+        /* Buttons */
+        div.stButton > button {{
+            display: inline-block;
+            margin: 8px;
+            width: 180px;
+            height: 44px;
+            font-size: 15px;
+            border-radius: 8px;
+        }}
+
+        /* Hide input clear buttons */
+        input::-ms-clear, input::-ms-reveal {{display: none; width: 0; height: 0;}}
+        input::-webkit-search-cancel-button,
+        input::-webkit-contacts-auto-fill-button,
+        input::-webkit-clear-button {{display: none;}}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
+# apply background
 set_background("can.jpg")
-
-# Test content
-st.markdown('<div class="login-card">', unsafe_allow_html=True)
-st.header("Login")
-st.text_input("Username")
-st.text_input("Password", type="password")
-st.button("Login")
-st.markdown('</div>', unsafe_allow_html=True)
 
 
 def get_connection():
