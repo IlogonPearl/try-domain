@@ -327,7 +327,10 @@ if "sold_out" not in st.session_state:
 
 try:
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-    def run_ai_with_rag(query: str) -> str:
+except Exception:
+    client = None
+
+def run_ai_with_rag(query: str) -> str:
     """Call Groq LLM and return the response text."""
     try:
         completion = client.chat.completions.create(
@@ -340,9 +343,6 @@ try:
         return completion.choices[0].message["content"]
     except Exception as e:
         return f"⚠️ AI error: {e}"
-except Exception:
-    client = None
-
 
 if "page" not in st.session_state:
     st.session_state.page = "login"
