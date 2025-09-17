@@ -11,7 +11,48 @@ import hashlib
 import secrets
 import re
 
+def set_background(image_file: str):
+    """Set background image and remove white container box."""
+    try:
+        with open(image_file, "rb") as f:
+            data = f.read()
+        encoded = base64.b64encode(data).decode()
+
+        st.markdown(
+            f"""
+            <style>
+            /* Main app background */
+            [data-testid="stAppViewContainer"] {{
+                background: url("data:image/png;base64,{encoded}");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }}
+
+            /* Transparent main area (remove white box) */
+            [data-testid="stAppViewContainer"] > section {{
+                background: transparent;
+            }}
+
+            /* Sidebar styling */
+            [data-testid="stSidebar"] {{
+                background: rgba(255,255,255,0.9);
+            }}
+
+            /* Hide Streamlit footer & menu */
+            #MainMenu {{visibility: hidden;}}
+            footer {{visibility: hidden;}}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    except Exception as e:
+        st.error(f"Background error: {e}")
+
+
 st.set_page_config(page_title="BiteHub Canteen GenAI", layout="wide")
+set_background("can.jpg")
+
 
 def get_connection():
     # Make sure st.secrets has your SNOWFLAKE_* values
