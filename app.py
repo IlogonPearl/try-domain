@@ -18,9 +18,9 @@ def set_background(image_file: str):
             data = f.read()
         encoded = base64.b64encode(data).decode()
 
-  st.markdown(
-    f"""
-    <style>
+        st.markdown(
+f"""
+<style>
     /* Main app background */
     [data-testid="stAppViewContainer"] {{
         background: url("data:image/png;base64,{encoded}");
