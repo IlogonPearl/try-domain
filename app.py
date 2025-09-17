@@ -661,84 +661,78 @@ if st.button("Ask AI", key="ai_button_main"):
             st.session_state.page = "login"
             st.session_state.user = None
 
-    # ---------------------------
-    # STAFF PORTAL
-    # ---------------------------
-    elif user["role"] == "Staff":
-        st.title("🛠️ BiteHub Staff Portal")
-        choice = st.sidebar.radio("Staff Menu", ["Dashboard", "Pending Orders", "Manage Menu", "AI Assistant", "Feedback Review", "Sales Report"])
-
-        if choice == "Dashboard":
-            st.subheader("📊 Staff Dashboard")
-            st.info("Overview: pending orders, quick sales, and recent feedback.")
-            try:
-                receipts = load_receipts_df()
-                fb = load_feedbacks_df()
-                st.metric("Total Orders", len(receipts))
-                st.metric("Feedbacks", len(fb))
-                pending = receipts[receipts["status"].str.lower() == "pending"] if not receipts.empty else pd.DataFrame()
-                st.metric("Pending Orders", len(pending))
-            except Exception as e:
-                st.error(f"Could not load quick stats: {e}")
-
-        elif choice == "Pending Orders":
-            st.subheader("📦 Pending Orders")
-            try:
-                receipts_df = load_receipts_df()
-                if not receipts_df.empty:
-                    pending = receipts_df[receipts_df["status"].str.lower() == "pending"]
-                    if not pending.empty:
-                        for _, row in pending.iterrows():
-                            st.write(f"Order {row['order_id']}: {row['items']} — ₱{row['total']} | Pickup: {row['pickup_time']} | By: {row['user_id']}")
-                            if st.button(f"Mark Ready {row['order_id']}", key=f"ready_{row['order_id']}"):
-                                set_receipt_status(row['order_id'], "Ready for Pickup")
-                                st.success(f"Order {row['order_id']} marked ready")
-                                st.rerun()
-                    else:
-                        st.info("No pending orders.")
-                else:
-                    st.info("No receipts yet.")
-            except Exception as e:
-                st.error(f"Could not load pending orders: {e}")
-
-        elif choice == "Manage Menu":
-            st.subheader("📋 Manage Menu (in-memory demo)")
-            cat = st.selectbox("Category", list(menu_data.keys()))
-            item = st.text_input("Item name")
-            price = st.number_input("Price", min_value=0.0, step=1.0, value=10.0)
-            if st.button("Add / Update Item"):
-                if item:
-                    menu_data[cat][item] = float(price)
-                    st.success(f"{item} added/updated in {cat}")
-            sel = st.selectbox("Select item to modify", ["(none)"] + [i for c in menu_data.values() for i in c.keys()])
-            if sel != "(none)":
-                if st.button("Mark Sold Out"):
-                    st.session_state.sold_out.add(sel)
-                    st.success(f"{sel} marked as Sold Out")
-                if st.button("Mark Available"):
-                    st.session_state.sold_out.discard(sel)
-                    st.success(f"{sel} marked Available")
-                if st.button("Remove Item"):
-                    for c in menu_data:
-                        menu_data[c].pop(sel, None)
-                    st.success(f"{sel} removed")
-
+# ---------------------------
+# STAFF PORTAL
+# ---------------------------
 elif user["role"] == "Staff":
     st.title("🛠️ BiteHub Staff Portal")
-    choice = st.sidebar.radio("Staff Menu", ["Dashboard", "Pending Orders", "Manage Menu", "AI Assistant", "Feedback Review", "Sales Report"])
+    choice = st.sidebar.radio(
+        "Staff Menu",
+        ["Dashboard", "Pending Orders", "Manage Menu", "AI Assistant", "Feedback Review", "Sales Report"]
+    )
 
+    # ---------------- Dashboard ----------------
     if choice == "Dashboard":
         st.subheader("📊 Staff Dashboard")
-        # your code here...
+        st.info("Overview: pending orders, quick sales, and recent feedback.")
+        try:
+            receipts = load_receipts_df()
+            fb = load_feedbacks_df()
+            st.metric("Total Orders", len(receipts))
+            st.metric("Feedbacks", len(fb))
+            pending = receipts[receipts["status"].str.lower() == "pending"] if not receipts.empty else pd.DataFrame()
+            st.metric("Pending Orders", len(pending))
+        except Exception as e:
+            st.error(f"Could not load quick stats: {e}")
 
+    # ---------------- Pending Orders ----------------
     elif choice == "Pending Orders":
         st.subheader("📦 Pending Orders")
-        # your code here...
+        try:
+            receipts_df = load_receipts_df()
+            if not receipts_df.empty:
+                pending = receipts_df[receipts_df["status"].str.lower() == "pending"]
+                if not pending.empty:
+                    for _, row in pending.iterrows():
+                        st.write(
+                            f"Order {row['order_id']}: {row['items']} — ₱{row['total']} | "
+                            f"Pickup: {row['pickup_time']} | By: {row['user_id']}"
+                        )
+                        if st.button(f"Mark Ready {row['order_id']}", key=f"ready_{row['order_id']}"):
+                            set_receipt_status(row['order_id'], "Ready for Pickup")
+                            st.success(f"Order {row['order_id']} marked ready")
+                            st.rerun()
+                else:
+                    st.info("No pending orders.")
+            else:
+                st.info("No receipts yet.")
+        except Exception as e:
+            st.error(f"Could not load pending orders: {e}")
 
+    # ---------------- Manage Menu ----------------
     elif choice == "Manage Menu":
-        st.subheader("📋 Manage Menu")
-        # your code here...
+        st.subheader("📋 Manage Menu (in-memory demo)")
+        cat = st.selectbox("Category", list(menu_data.keys()))
+        item = st.text_input("Item name")
+        price = st.number_input("Price", min_value=0.0, step=1.0, value=10.0)
+        if st.button("Add / Update Item"):
+            if item:
+                menu_data[cat][item] = float(price)
+                st.success(f"{item} added/updated in {cat}")
+        sel = st.selectbox("Select item to modify", ["(none)"] + [i for c in menu_data.values() for i in c.keys()])
+        if sel != "(none)":
+            if st.button("Mark Sold Out"):
+                st.session_state.sold_out.add(sel)
+                st.success(f"{sel} marked as Sold Out")
+            if st.button("Mark Available"):
+                st.session_state.sold_out.discard(sel)
+                st.success(f"{sel} marked Available")
+            if st.button("Remove Item"):
+                for c in menu_data:
+                    menu_data[c].pop(sel, None)
+                st.success(f"{sel} removed")
 
+    # ---------------- AI Assistant ----------------
     elif choice == "AI Assistant":
         st.subheader("🤖 Staff AI Assistant")
         staff_q = st.text_input("Ask Staff AI", key="staff_ai_q")
@@ -746,6 +740,7 @@ elif user["role"] == "Staff":
             with st.spinner("Asking AI..."):
                 st.info(run_ai_with_rag(staff_q))
 
+    # ---------------- Feedback Review ----------------
     elif choice == "Feedback Review":
         st.subheader("💬 Customer Feedback")
         try:
@@ -757,6 +752,7 @@ elif user["role"] == "Staff":
         except Exception as e:
             st.error(f"Could not load feedbacks: {e}")
 
+    # ---------------- Sales Report ----------------
     elif choice == "Sales Report":
         st.subheader("📈 Sales Report")
         try:
@@ -769,8 +765,8 @@ elif user["role"] == "Staff":
                 st.info("No sales yet.")
         except Exception as e:
             st.error(f"Could not load sales: {e}")
-        # staff logout
-        if st.button("Log Out", key="logout_staff"):
-            st.session_state.page = "login"
-            st.session_state.user = None
 
+    # ---------------- Staff Logout ----------------
+    if st.button("Log Out", key="logout_staff"):
+        st.session_state.page = "login"
+        st.session_state.user = None
