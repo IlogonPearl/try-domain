@@ -660,7 +660,6 @@ if st.button("Ask AI", key="ai_button_main"):
         if st.button("Log Out", key="logout_nonstaff"):
             st.session_state.page = "login"
             st.session_state.user = None
-
 # ---------------------------
 # STAFF PORTAL
 # ---------------------------
@@ -671,7 +670,6 @@ elif user["role"] == "Staff":
         ["Dashboard", "Pending Orders", "Manage Menu", "AI Assistant", "Feedback Review", "Sales Report"]
     )
 
-    # ---------------- Dashboard ----------------
     if choice == "Dashboard":
         st.subheader("📊 Staff Dashboard")
         st.info("Overview: pending orders, quick sales, and recent feedback.")
@@ -685,7 +683,6 @@ elif user["role"] == "Staff":
         except Exception as e:
             st.error(f"Could not load quick stats: {e}")
 
-    # ---------------- Pending Orders ----------------
     elif choice == "Pending Orders":
         st.subheader("📦 Pending Orders")
         try:
@@ -695,8 +692,8 @@ elif user["role"] == "Staff":
                 if not pending.empty:
                     for _, row in pending.iterrows():
                         st.write(
-                            f"Order {row['order_id']}: {row['items']} — ₱{row['total']} | "
-                            f"Pickup: {row['pickup_time']} | By: {row['user_id']}"
+                            f"Order {row['order_id']}: {row['items']} — ₱{row['total']} "
+                            f"| Pickup: {row['pickup_time']} | By: {row['user_id']}"
                         )
                         if st.button(f"Mark Ready {row['order_id']}", key=f"ready_{row['order_id']}"):
                             set_receipt_status(row['order_id'], "Ready for Pickup")
@@ -709,9 +706,8 @@ elif user["role"] == "Staff":
         except Exception as e:
             st.error(f"Could not load pending orders: {e}")
 
-    # ---------------- Manage Menu ----------------
     elif choice == "Manage Menu":
-        st.subheader("📋 Manage Menu (in-memory demo)")
+        st.subheader("📋 Manage Menu")
         cat = st.selectbox("Category", list(menu_data.keys()))
         item = st.text_input("Item name")
         price = st.number_input("Price", min_value=0.0, step=1.0, value=10.0)
@@ -719,7 +715,11 @@ elif user["role"] == "Staff":
             if item:
                 menu_data[cat][item] = float(price)
                 st.success(f"{item} added/updated in {cat}")
-        sel = st.selectbox("Select item to modify", ["(none)"] + [i for c in menu_data.values() for i in c.keys()])
+
+        sel = st.selectbox(
+            "Select item to modify",
+            ["(none)"] + [i for c in menu_data.values() for i in c.keys()]
+        )
         if sel != "(none)":
             if st.button("Mark Sold Out"):
                 st.session_state.sold_out.add(sel)
@@ -732,7 +732,6 @@ elif user["role"] == "Staff":
                     menu_data[c].pop(sel, None)
                 st.success(f"{sel} removed")
 
-    # ---------------- AI Assistant ----------------
     elif choice == "AI Assistant":
         st.subheader("🤖 Staff AI Assistant")
         staff_q = st.text_input("Ask Staff AI", key="staff_ai_q")
@@ -740,7 +739,6 @@ elif user["role"] == "Staff":
             with st.spinner("Asking AI..."):
                 st.info(run_ai_with_rag(staff_q))
 
-    # ---------------- Feedback Review ----------------
     elif choice == "Feedback Review":
         st.subheader("💬 Customer Feedback")
         try:
@@ -752,7 +750,6 @@ elif user["role"] == "Staff":
         except Exception as e:
             st.error(f"Could not load feedbacks: {e}")
 
-    # ---------------- Sales Report ----------------
     elif choice == "Sales Report":
         st.subheader("📈 Sales Report")
         try:
@@ -766,7 +763,7 @@ elif user["role"] == "Staff":
         except Exception as e:
             st.error(f"Could not load sales: {e}")
 
-    # ---------------- Staff Logout ----------------
+    # staff logout
     if st.button("Log Out", key="logout_staff"):
         st.session_state.page = "login"
         st.session_state.user = None
