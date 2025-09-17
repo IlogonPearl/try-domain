@@ -501,19 +501,11 @@ elif st.session_state.page == "main":
 
     st.title(f"🏫 Welcome {user['username']} to BiteHub")
 
-    # COMMON: AI assistant area for all roles
     st.markdown("### 🤖 Canteen AI Assistant")
-    q = st.text_input("Ask about menu, budget, feedback, or ordering:", key="ai_query_main")
-    if st.button("Ask AI", key="ai_button_main"):
-        extra = ""
-        try:
-            sales_df = load_receipts_df()
-            feedback_df = load_feedbacks_df()
-            extra = f"SALES_SUMMARY: {sales_df.head(10).to_dict() if not sales_df.empty else 'No sales'}\nFEEDBACK_SUMMARY: {feedback_df.head(10).to_dict() if not feedback_df.empty else 'No feedback'}"
-        except Exception:
-            extra = "DB context unavailable."
-        with st.spinner("Asking AI..."):
-            st.info(run_ai(q, extra))
+q = st.text_input("Ask about menu, budget, feedback, or ordering:", key="ai_query_main")
+if st.button("Ask AI", key="ai_button_main"):
+    with st.spinner("Asking AI..."):
+        st.info(run_ai_with_rag(q))
 
     st.divider()
 
@@ -732,17 +724,11 @@ elif st.session_state.page == "main":
                     st.success(f"{sel} removed")
 
         elif choice == "AI Assistant":
-            st.subheader("🤖 Staff AI Assistant")
-            staff_q = st.text_input("Ask Staff AI", key="staff_ai_q")
-            if st.button("Ask Staff AI", key="staff_ai_btn"):
-                try:
-                    sales = load_receipts_df().head(50).to_dict()
-                    fb = load_feedbacks_df().head(50).to_dict()
-                    ctx = f"Sales: {sales}\nFeedback: {fb}"
-                except Exception:
-                    ctx = "DB context unavailable"
-                with st.spinner("Asking AI..."):
-                    st.info(run_ai(staff_q, ctx))
+    st.subheader("🤖 Staff AI Assistant")
+    staff_q = st.text_input("Ask Staff AI", key="staff_ai_q")
+    if st.button("Ask Staff AI", key="staff_ai_btn"):
+        with st.spinner("Asking AI..."):
+            st.info(run_ai_with_rag(staff_q))
 
         elif choice == "Feedback Review":
             st.subheader("💬 Customer Feedback")
