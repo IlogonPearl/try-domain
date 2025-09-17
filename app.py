@@ -11,79 +11,47 @@ import hashlib
 import secrets
 import re
 
+st.set_page_config(page_title="Background Test", layout="wide")
+
 def set_background(image_file: str):
-    """Set only the background image."""
-    try:
-        with open(image_file, "rb") as f:
-            data = f.read()
-        encoded = base64.b64encode(data).decode()
+    with open(image_file, "rb") as f:
+        data = f.read()
+    encoded = base64.b64encode(data).decode()
 
-        st.markdown(
-            f"""
-            <style>
-            [data-testid="stAppViewContainer"] {{
-                background: url("data:image/png;base64,{encoded}");
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-    except Exception as e:
-        st.error(f"Background error: {e}")
-
-
-def apply_custom_css():
-    """Remove white box + style UI."""
     st.markdown(
-        """
+        f"""
         <style>
-        /* Kill Streamlit containers */
-        [data-testid="stBlockContainer"],
-        section.main > div,
-        [data-testid="stAppViewContainer"] section {
+        /* Set background image */
+        [data-testid="stAppViewContainer"] {{
+            background: url("data:image/png;base64,{encoded}") !important;
+            background-size: cover !important;
+            background-position: center !important;
+        }}
+
+        /* Remove Streamlit default white */
+        [data-testid="stHeader"], [data-testid="stToolbar"], footer, #MainMenu {{
+            visibility: hidden !important;
+        }}
+        [data-testid="stAppViewContainer"] > .main {{
             background: transparent !important;
-            box-shadow: none !important;
-        }
-
-        /* Sidebar */
-        [data-testid="stSidebar"] {
-            background: rgba(255,255,255,0.9) !important;
-        }
-
-        /* Hide header & footer */
-        header[data-testid="stHeader"] { display: none; }
-        #MainMenu { visibility: hidden; }
-        footer { visibility: hidden; }
-
-        /* Login card */
-        .login-card {
-            background: rgba(255,255,255,0.95);
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 720px;
-            margin: 12px auto;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-        }
-
-        /* Buttons */
-        div.stButton > button {
-            display: inline-block;
-            margin: 8px;
-            width: 180px;
-            height: 44px;
-            font-size: 15px;
-            border-radius: 8px;
-        }
+        }}
+        section[data-testid="stSidebar"] > div {{
+            background: rgba(255,255,255,0.8) !important;
+        }}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-st.set_page_config(page_title="BiteHub Canteen GenAI", layout="wide")
 set_background("can.jpg")
+
+# Test content
+st.markdown('<div class="login-card">', unsafe_allow_html=True)
+st.header("Login")
+st.text_input("Username")
+st.text_input("Password", type="password")
+st.button("Login")
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 def get_connection():
