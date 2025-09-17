@@ -329,7 +329,6 @@ try:
 except Exception:
     client = None
 
-# --- AI helper ---
 def run_ai_with_rag(query: str) -> str:
     if client is None:
         return "⚠️ AI not available (missing or invalid API key)."
