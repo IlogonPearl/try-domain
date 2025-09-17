@@ -734,29 +734,26 @@ elif choice == "AI Assistant":
 elif choice == "Feedback Review":
     st.subheader("💬 Customer Feedback")
     try:
-        # your feedback review code here
-        pass
-                fb_df = load_feedbacks_df()
-                if not fb_df.empty:
-                    st.dataframe(fb_df)
-                else:
-                    st.info("No feedback yet.")
-            except Exception as e:
-                st.error(f"Could not load feedbacks: {e}")
+        fb_df = load_feedbacks_df()
+        if not fb_df.empty:
+            st.dataframe(fb_df)
+        else:
+            st.info("No feedback yet.")
+    except Exception as e:
+        st.error(f"Could not load feedbacks: {e}")
 
-        elif choice == "Sales Report":
-            st.subheader("📈 Sales Report")
-            try:
-                receipts_df = load_receipts_df()
-                if not receipts_df.empty:
-                    st.dataframe(receipts_df)
-                    sums = receipts_df.groupby("payment_method")["total"].sum()
-                    st.bar_chart(sums)
-                else:
-                    st.info("No sales yet.")
-            except Exception as e:
-                st.error(f"Could not load sales: {e}")
-
+elif choice == "Sales Report":
+    st.subheader("📈 Sales Report")
+    try:
+        receipts_df = load_receipts_df()
+        if not receipts_df.empty:
+            st.dataframe(receipts_df)
+            sums = receipts_df.groupby("payment_method")["total"].sum()
+            st.bar_chart(sums)
+        else:
+            st.info("No sales yet.")
+    except Exception as e:
+        st.error(f"Could not load sales: {e}")
         # staff logout
         if st.button("Log Out", key="logout_staff"):
             st.session_state.page = "login"
