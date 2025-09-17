@@ -18,7 +18,7 @@ def set_background(image_file: str):
             data = f.read()
         encoded = base64.b64encode(data).decode()
 
-        st.markdown(
+  st.markdown(
     f"""
     <style>
     /* Main app background */
@@ -29,6 +29,13 @@ def set_background(image_file: str):
         background-repeat: no-repeat;
     }}
 
+    /* Kill white background container */
+    [data-testid="stAppViewContainer"] > .main {{
+        background: transparent !important;
+        box-shadow: none !important;
+    }}
+
+    /* Kill section wrapper if present */
     [data-testid="stAppViewContainer"] section {{
         background: transparent !important;
         box-shadow: none !important;
