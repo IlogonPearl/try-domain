@@ -19,33 +19,33 @@ def set_background(image_file: str):
         encoded = base64.b64encode(data).decode()
 
         st.markdown(
-            f"""
-            <style>
-            /* Main app background */
-            [data-testid="stAppViewContainer"] {{
-                background: url("data:image/png;base64,{encoded}");
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-            }}
+    f"""
+    <style>
+    /* Main app background */
+    [data-testid="stAppViewContainer"] {{
+        background: url("data:image/png;base64,{encoded}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }}
 
-            /* Transparent main area (remove white box) */
-            [data-testid="stAppViewContainer"] > section {{
-                background: transparent;
-            }}
+    [data-testid="stAppViewContainer"] section {{
+        background: transparent !important;
+        box-shadow: none !important;
+    }}
 
-            /* Sidebar styling */
-            [data-testid="stSidebar"] {{
-                background: rgba(255,255,255,0.9);
-            }}
+    [data-testid="stSidebar"] {{
+        background: rgba(255,255,255,0.9);
+    }}
 
-            /* Hide Streamlit footer & menu */
-            #MainMenu {{visibility: hidden;}}
-            footer {{visibility: hidden;}}
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
+    /* Hide Streamlit footer & menu */
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+        
     except Exception as e:
         st.error(f"Background error: {e}")
 
