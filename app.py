@@ -327,6 +327,19 @@ if "sold_out" not in st.session_state:
 
 try:
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+    def run_ai_with_rag(query: str) -> str:
+    """Call Groq LLM and return the response text."""
+    try:
+        completion = client.chat.completions.create(
+            model="mixtral-8x7b-32768",   # or whichever Groq model you want
+            messages=[
+                {"role": "system", "content": "You are BiteHub's helpful staff AI assistant."},
+                {"role": "user", "content": query},
+            ],
+        )
+        return completion.choices[0].message["content"]
+    except Exception as e:
+        return f"⚠️ AI error: {e}"
 except Exception:
     client = None
 
