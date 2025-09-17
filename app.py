@@ -324,12 +324,16 @@ menu_data = {
 if "sold_out" not in st.session_state:
     st.session_state.sold_out = set()
 
+# ---------------------------
+# AI Client Setup
+# ---------------------------
 try:
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 except Exception:
     client = None
 
 def run_ai_with_rag(query: str) -> str:
+    """Minimal helper for BiteHub staff AI."""
     if client is None:
         return "⚠️ AI not available (missing or invalid API key)."
     try:
@@ -344,63 +348,9 @@ def run_ai_with_rag(query: str) -> str:
     except Exception as e:
         return f"⚠️ AI error: {e}"
 
-# --- rest of your app ---
-elif st.session_state.page == "main":
-    ...
-    st.info(run_ai_with_rag(q))   # ✅ now works
-if "page" not in st.session_state:
-    st.session_state.page = "login"
-if "user" not in st.session_state:
-    st.session_state.user = None
-if "cart" not in st.session_state:
-    st.session_state.cart = {}
-# session-level fallback loyalty_points (used only for guests/local)
-if "loyalty_points" not in st.session_state:
-    st.session_state.loyalty_points = 0
-if "notifications" not in st.session_state:
-    st.session_state.notifications = []
-
-st.markdown(
-    """
-    <style>
-    /* hide default Streamlit header */
-    header[data-testid="stHeader"] { display: none; }
-
-    /* tighten top spacing so no white box appears */
-    [data-testid="stAppViewContainer"] > section:first-child {
-        padding-top: 6px;
-    }
-
-    /* login card look */
-    .login-card {
-        background: rgba(255,255,255,0.95);
-        padding: 20px;
-        border-radius: 10px;
-        max-width: 720px;
-        margin: 12px auto;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    }
-
-    /* uniform button sizes */
-    div.stButton > button {
-        display: inline-block;
-        margin: 8px;
-        width: 180px;
-        height: 44px;
-        font-size: 15px;
-        border-radius: 8px;
-    }
-
-    /* Hide native clear/reveal buttons in inputs (Chrome/Edge/IE) */
-    input::-ms-clear, input::-ms-reveal { display: none; width: 0; height: 0; }
-    input::-webkit-search-cancel-button, input::-webkit-contacts-auto-fill-button, input::-webkit-clear-button { display: none; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 
 def run_ai(question: str, extra_context: str = "") -> str:
+    """Context-aware AI assistant for menu + user queries."""
     if not client:
         return "⚠️ AI unavailable (no Groq client configured)."
     if not question:
@@ -424,12 +374,29 @@ def password_valid_rules(pw: str):
         "upper": bool(re.search(r"[A-Z]", pw)),
         "lower": bool(re.search(r"[a-z]", pw)),
         "digit": bool(re.search(r"[0-9]", pw)),
-        # symbol: any non-word, non-space char
-        "symbol": bool(re.search(r"[^\w\s]", pw)),
+        "symbol": bool(re.search(r"[^\w\s]", pw)),  # non-word, non-space
     }
     return rules
 
 
+# ---------------------------
+# SESSION Defaults
+# ---------------------------
+if "page" not in st.session_state:
+    st.session_state.page = "login"
+if "user" not in st.session_state:
+    st.session_state.user = None
+if "cart" not in st.session_state:
+    st.session_state.cart = {}
+if "loyalty_points" not in st.session_state:
+    st.session_state.loyalty_points = 0
+if "notifications" not in st.session_state:
+    st.session_state.notifications = []
+
+
+# ---------------------------
+# LOGIN Page
+# ---------------------------
 if st.session_state.page == "login":
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown("<h2>☕ BiteHub — Login</h2>", unsafe_allow_html=True)
@@ -448,7 +415,6 @@ if st.session_state.page == "login":
                 st.error(f"Login error (DB): {e}")
                 user = None
             if user:
-                # user contains loyalty_points
                 st.session_state.user = user
                 st.session_state.page = "main"
                 st.success(f"Welcome, {user['username']}!")
@@ -456,7 +422,6 @@ if st.session_state.page == "login":
                 st.error("❌ Invalid username or password. Please try again or create an account.")
     with col2:
         if st.button("Guest Account", key="guest_btn"):
-            # Guest session: no DB account, limited features
             st.session_state.user = {"username": "Guest", "role": "Non-Staff", "loyalty_points": 0}
             st.session_state.page = "main"
             st.success("Signed in as Guest")
@@ -466,6 +431,10 @@ if st.session_state.page == "login":
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
+
+# ---------------------------
+# SIGNUP Page
+# ---------------------------
 elif st.session_state.page == "signup":
     st.markdown('<div class="login-card">', unsafe_allow_html=True)
     st.markdown("<h2>✍️ Create Account</h2>", unsafe_allow_html=True)
@@ -476,7 +445,7 @@ elif st.session_state.page == "signup":
 
     # live validation display
     rules = password_valid_rules(new_pass)
-    st.markdown("**Password rules:** (all must be ✅ to register)")
+    st.markdown("*Password rules:* (all must be ✅ to register)")
     st.write(f"- Minimum 12 chars: {'✅' if rules['length'] else '❌'}")
     st.write(f"- Uppercase letter: {'✅' if rules['upper'] else '❌'}")
     st.write(f"- Lowercase letter: {'✅' if rules['lower'] else '❌'}")
@@ -502,11 +471,6 @@ elif st.session_state.page == "signup":
     if st.button("Back to Login", key="back_login"):
         st.session_state.page = "login"
     st.markdown("</div>", unsafe_allow_html=True)
-
-# ---------------------------
-# MAIN Portal (Non-Staff and Staff)
-# ---------------------------
-elif st.session_state.page == "main":
     user = st.session_state.user or {"username": "Guest", "role": "Non-Staff", "loyalty_points": 0}
     # normalize structure: ensure 'loyalty_points' exists
     if "loyalty_points" not in user:
