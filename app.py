@@ -18,7 +18,7 @@ def set_background(image_file: str):
             data = f.read()
         encoded = base64.b64encode(data).decode()
 st.markdown(
-    """
+    f"""
     <style>
     /* hide default Streamlit header */
     header[data-testid="stHeader"] { display: none; }
