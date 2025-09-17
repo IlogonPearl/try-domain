@@ -324,17 +324,18 @@ menu_data = {
 if "sold_out" not in st.session_state:
     st.session_state.sold_out = set()
 
-
 try:
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 except Exception:
     client = None
 
+# --- AI helper ---
 def run_ai_with_rag(query: str) -> str:
-    """Call Groq LLM and return the response text."""
+    if client is None:
+        return "⚠️ AI not available (missing or invalid API key)."
     try:
         completion = client.chat.completions.create(
-            model="mixtral-8x7b-32768",   # or whichever Groq model you want
+            model="mixtral-8x7b-32768",
             messages=[
                 {"role": "system", "content": "You are BiteHub's helpful staff AI assistant."},
                 {"role": "user", "content": query},
@@ -344,6 +345,10 @@ def run_ai_with_rag(query: str) -> str:
     except Exception as e:
         return f"⚠️ AI error: {e}"
 
+# --- rest of your app ---
+elif st.session_state.page == "main":
+    ...
+    st.info(run_ai_with_rag(q))   # ✅ now works
 if "page" not in st.session_state:
     st.session_state.page = "login"
 if "user" not in st.session_state:
