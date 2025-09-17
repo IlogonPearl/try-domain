@@ -723,12 +723,14 @@ if st.button("Ask AI", key="ai_button_main"):
                         menu_data[c].pop(sel, None)
                     st.success(f"{sel} removed")
 
-        elif choice == "AI Assistant":
+elif choice == "AI Assistant":
     st.subheader("🤖 Staff AI Assistant")
-    staff_q = st.text_input("Ask Staff AI", key="staff_ai_q")
-    if st.button("Ask Staff AI", key="staff_ai_btn"):
+    staff_q = st.text_input("Ask Staff AI", 
+key="staff_ai_q")
+    if st.button("Ask Staff AI", 
+key="staff_ai_btn"):
         with st.spinner("Asking AI..."):
-            st.info(run_ai_with_rag(staff_q))
+st.info(run_ai_with_rag(staff_q))
 
         elif choice == "Feedback Review":
             st.subheader("💬 Customer Feedback")
