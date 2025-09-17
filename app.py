@@ -723,37 +723,52 @@ if st.button("Ask AI", key="ai_button_main"):
                         menu_data[c].pop(sel, None)
                     st.success(f"{sel} removed")
 
-elif choice == "AI Assistant":
-    st.subheader("🤖 Staff AI Assistant")
-    staff_q = st.text_input("Ask Staff AI", key="staff_ai_q")
+elif user["role"] == "Staff":
+    st.title("🛠️ BiteHub Staff Portal")
+    choice = st.sidebar.radio("Staff Menu", ["Dashboard", "Pending Orders", "Manage Menu", "AI Assistant", "Feedback Review", "Sales Report"])
 
-    if st.button("Ask Staff AI", key="staff_ai_btn"):
-        with st.spinner("Asking AI..."):
-            st.info(run_ai_with_rag(staff_q))
+    if choice == "Dashboard":
+        st.subheader("📊 Staff Dashboard")
+        # your code here...
 
-elif choice == "Feedback Review":
-    st.subheader("💬 Customer Feedback")
-    try:
-        fb_df = load_feedbacks_df()
-        if not fb_df.empty:
-            st.dataframe(fb_df)
-        else:
-            st.info("No feedback yet.")
-    except Exception as e:
-        st.error(f"Could not load feedbacks: {e}")
+    elif choice == "Pending Orders":
+        st.subheader("📦 Pending Orders")
+        # your code here...
 
-elif choice == "Sales Report":
-    st.subheader("📈 Sales Report")
-    try:
-        receipts_df = load_receipts_df()
-        if not receipts_df.empty:
-            st.dataframe(receipts_df)
-            sums = receipts_df.groupby("payment_method")["total"].sum()
-            st.bar_chart(sums)
-        else:
-            st.info("No sales yet.")
-    except Exception as e:
-        st.error(f"Could not load sales: {e}")
+    elif choice == "Manage Menu":
+        st.subheader("📋 Manage Menu")
+        # your code here...
+
+    elif choice == "AI Assistant":
+        st.subheader("🤖 Staff AI Assistant")
+        staff_q = st.text_input("Ask Staff AI", key="staff_ai_q")
+        if st.button("Ask Staff AI", key="staff_ai_btn"):
+            with st.spinner("Asking AI..."):
+                st.info(run_ai_with_rag(staff_q))
+
+    elif choice == "Feedback Review":
+        st.subheader("💬 Customer Feedback")
+        try:
+            fb_df = load_feedbacks_df()
+            if not fb_df.empty:
+                st.dataframe(fb_df)
+            else:
+                st.info("No feedback yet.")
+        except Exception as e:
+            st.error(f"Could not load feedbacks: {e}")
+
+    elif choice == "Sales Report":
+        st.subheader("📈 Sales Report")
+        try:
+            receipts_df = load_receipts_df()
+            if not receipts_df.empty:
+                st.dataframe(receipts_df)
+                sums = receipts_df.groupby("payment_method")["total"].sum()
+                st.bar_chart(sums)
+            else:
+                st.info("No sales yet.")
+        except Exception as e:
+            st.error(f"Could not load sales: {e}")
         # staff logout
         if st.button("Log Out", key="logout_staff"):
             st.session_state.page = "login"
